@@ -1,0 +1,94 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Address {
+  id           Int       @id(map: "Adress_pkey") @default(autoincrement())
+  hostId       Int
+  cep          Int
+  street       String    @db.VarChar(255)
+  number       Int
+  city         String    @db.VarChar(255)
+  state        String    @db.VarChar(255)
+  neighborhood String    @db.VarChar(255)
+  adressDetail String?   @db.VarChar(255)
+  createdAt    DateTime? @default(now()) @db.Timestamp(6)
+  updatedAt    DateTime? @default(now()) @db.Timestamp(6)
+  Host         Host      @relation(fields: [hostId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Adress_hostId_fkey")
+}
+
+model AvailablePets {
+  id           Int       @id @default(autoincrement())
+  hostId       Int
+  petTypeId    Int
+  type         String    @db.VarChar(255)
+  name         String    @db.VarChar(255)
+  age          String    @db.VarChar(255)
+  race         String    @db.VarChar(255)
+  isVaccinated Boolean
+  isAvailable  Boolean   @default(true)
+  countLikes   Int       @default(0)
+  picture      String    @db.VarChar(255)
+  createdAt    DateTime? @default(now()) @db.Timestamp(6)
+  updatedAt    DateTime? @default(now()) @db.Timestamp(6)
+  Host         Host      @relation(fields: [hostId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  PetType      PetType   @relation(fields: [petTypeId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  MyPet        MyPet[]
+}
+
+model Host {
+  id            Int             @id @default(autoincrement())
+  email         String          @db.VarChar(255)
+  password      String          @db.VarChar(255)
+  name          String          @db.VarChar(255)
+  state         String          @db.VarChar(255)
+  createdAt     DateTime?       @default(now()) @db.Timestamp(6)
+  updatedAt     DateTime?       @default(now()) @db.Timestamp(6)
+  Address       Address[]
+  AvailablePets AvailablePets[]
+  Session       Session[]
+}
+
+model MyPet {
+  id            Int           @id @default(autoincrement())
+  userId        Int
+  petId         Int
+  createdAt     DateTime?     @default(now()) @db.Timestamp(6)
+  updatedAt     DateTime?     @default(now()) @db.Timestamp(6)
+  AvailablePets AvailablePets @relation(fields: [petId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  User          User          @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model PetType {
+  id            Int             @id
+  name          String          @unique @db.VarChar(255)
+  AvailablePets AvailablePets[]
+}
+
+model Session {
+  id        Int       @id @default(autoincrement())
+  token     String    @db.VarChar(255)
+  userId    Int?
+  hostId    Int?
+  createdAt DateTime? @default(now()) @db.Timestamp(6)
+  updatedAt DateTime? @default(now()) @db.Timestamp(6)
+  Host      Host?     @relation(fields: [hostId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  User      User?     @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model User {
+  id        Int       @id @default(autoincrement())
+  email     String    @db.VarChar(255)
+  password  String    @db.VarChar(255)
+  name      String    @db.VarChar(255)
+  state     String    @db.VarChar(255)
+  createdAt DateTime? @default(now()) @db.Timestamp(6)
+  updatedAt DateTime? @default(now()) @db.Timestamp(6)
+  MyPet     MyPet[]
+  Session   Session[]
+}

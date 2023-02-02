@@ -11,15 +11,6 @@ loadEnv();
 import { handleApplicationErrors } from "@/middlewares";
 import {
   usersRouter,
-  authenticationRouter,
-  eventsRouter,
-  enrollmentsRouter,
-  ticketsRouter,
-  paymentsRouter,
-  hotelsRouter,
-  bookingRouter,
-  activitiesRouter,
-  applicationsRouter,
 } from "@/routers";
 
 const app = express();
@@ -28,15 +19,6 @@ app
   .use(express.json())
   .get("/health", (_req, res) => res.send("OK!"))
   .use("/users", usersRouter)
-  .use("/auth", authenticationRouter)
-  .use("/event", eventsRouter)
-  .use("/enrollments", enrollmentsRouter)
-  .use("/tickets", ticketsRouter)
-  .use("/payments", paymentsRouter)
-  .use("/hotels", hotelsRouter)
-  .use("/booking", bookingRouter)
-  .use("/activities", activitiesRouter)
-  .use("/applications", applicationsRouter)
   .use(handleApplicationErrors);
 
 export function init(): Promise<Express> {

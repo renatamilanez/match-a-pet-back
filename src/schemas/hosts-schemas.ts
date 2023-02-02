@@ -1,7 +1,7 @@
-import { CreateUserParams } from "@/services/users-service";
+import { CreateHostParams } from "@/services/hosts-service";
 import Joi from "joi";
 
-export const createUserSchema = Joi.object<CreateUserParams>({
+export const createHostSchema = Joi.object<CreateHostParams>({
   email: Joi.string().email().required(),
   password: Joi.string().min(6).required(),
   name: Joi.string().required(),

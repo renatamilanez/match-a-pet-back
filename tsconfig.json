@@ -21,7 +21,7 @@
       {
         "transform": "typescript-transform-paths"
       }
-    ]
+    ],
   },
   "include": [
     "src",
