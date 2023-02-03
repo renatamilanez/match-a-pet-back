@@ -7,3 +7,8 @@ export const createUserSchema = Joi.object<CreateUserParams>({
   name: Joi.string().required(),
   state: Joi.string().required()
 });
+
+export const addPetSchema = Joi.object({
+  petId: Joi.number().required(),
+  count: Joi.number().required()
+});

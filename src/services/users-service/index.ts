@@ -25,10 +25,15 @@ async function validateUniqueEmailOrFail(email: string) {
   }
 }
 
+async function addToMyPets(userId: number, petId: number, count: number) {
+  await userRepository.addToMyPets(userId, petId, count);
+}
+
 export type CreateUserParams = Pick<User, "email" | "password" | "name" | "state">;
 
 const userService = {
   createUser,
+  addToMyPets
 };
 
 export default userService;

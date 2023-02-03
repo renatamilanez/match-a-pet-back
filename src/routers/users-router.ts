@@ -1,11 +1,12 @@
 import { Router } from "express";
-
-import { createUserSchema } from "@/schemas";
+import { createUserSchema, addPetSchema } from "@/schemas";
 import { validateBody } from "@/middlewares";
-import { usersPost } from "@/controllers";
+import { addToMyPets, usersPost } from "@/controllers";
 
 const usersRouter = Router();
 
-usersRouter.post("/", validateBody(createUserSchema), usersPost);
+usersRouter
+    .post("/enroll", validateBody(createUserSchema), usersPost)
+    .post("/myPets", validateBody(addPetSchema), addToMyPets)
 
 export { usersRouter };

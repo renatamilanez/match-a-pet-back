@@ -16,9 +16,29 @@ async function createUser(data: Prisma.UserUncheckedCreateInput) {
   });
 }
 
+async function addToMyPets(petId: number, userId: number, count: number) {
+  await prisma.$transaction([
+    prisma.myPet.create({
+      data: {
+        petId,
+        userId
+      }
+    }),
+    prisma.availablePets.update({
+      where: {
+        id: petId,
+      },
+      data: {
+        countLikes: count
+      }
+    })
+  ]);
+}
+
 const userRepository = {
   findByEmail,
-  createUser
+  createUser,
+  addToMyPets
 };
 
 export default userRepository;

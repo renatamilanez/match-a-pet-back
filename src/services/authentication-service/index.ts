@@ -9,6 +9,7 @@ import { invalidCredentialsError } from "./errors";
 
 async function signIn(email: string, password: string, userType: string): Promise<SignInResult> {  
   const user = await getUserOrFail(email);
+  console.log(userType);
 
   await validatePasswordOrFail(password, user.password);
 
@@ -30,6 +31,7 @@ async function getUserOrFail(email: string): Promise<GetUserOrFailResult> {
 
 async function createSession(userId: number, userType: string) {
   const token = jwt.sign({ userId }, process.env.JWT_SECRET);
+  console.log(userType);
   if(userType === 'user'){
     await sessionRepository.create({
       token,

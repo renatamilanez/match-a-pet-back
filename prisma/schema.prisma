@@ -26,7 +26,6 @@ model AvailablePets {
   id           Int       @id @default(autoincrement())
   hostId       Int
   petTypeId    Int
-  type         String    @db.VarChar(255)
   name         String    @db.VarChar(255)
   age          String    @db.VarChar(255)
   race         String    @db.VarChar(255)
@@ -65,7 +64,7 @@ model MyPet {
 }
 
 model PetType {
-  id            Int             @id
+  id            Int             @id @default(autoincrement())
   name          String          @unique @db.VarChar(255)
   AvailablePets AvailablePets[]
 }
