@@ -7,6 +7,6 @@ const usersRouter = Router();
 
 usersRouter
     .post("/enroll", validateBody(createUserSchema), usersPost)
-    .post("/myPets", validateBody(addPetSchema), addToMyPets)
+    .post("/mypets", validateBody(addPetSchema), addToMyPets)
 
 export { usersRouter };

@@ -18,10 +18,21 @@ export async function getPetsByType(type: string) {
 }
 
 export async function getPetById(petId: number) {
-  const pet: AvailablePets = await petsRepository.findPet(petId);
+  const pet: (AvailablePets & {Host: {state: string}}) = await petsRepository.findPet(petId);
   if(!pet || pet.isAvailable === false) throw notFoundError();
+
+  const data = {
+    id: pet.id,
+    name: pet.name,
+    picture: pet.picture,
+    age: pet.age,
+    isVaccinated: pet.isVaccinated,
+    race: pet.race,
+    state: pet.Host.state,
+    countLikes: pet.countLikes,
+  }
   
-  return exclude(pet, "createdAt", "updatedAt");
+  return data;
 }
 
 export async function getTypes() {
