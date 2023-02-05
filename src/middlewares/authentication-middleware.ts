@@ -10,6 +10,8 @@ export async function authenticateToken(req: AuthenticatedRequest, res: Response
   if (!authHeader) return generateUnauthorizedResponse(res);
 
   const token = authHeader.split(" ")[1];
+
+  res.locals.token = token;
   if (!token) return generateUnauthorizedResponse(res);
 
   try {

@@ -1,3 +1,4 @@
+import { unauthorizedError } from "@/errors";
 import { AuthenticatedRequest } from "@/middlewares";
 import userService from "@/services/users-service";
 import { Request, Response } from "express";
@@ -33,5 +34,20 @@ export async function addToMyPets(req: AuthenticatedRequest, res: Response) {
     return res.sendStatus(httpStatus.CREATED);
   } catch (error) {
     
+  }
+}
+
+export async function userSignOut(req: AuthenticatedRequest, res: Response) {
+  const token = req.headers.authorization?.replace('Bearer', '');
+  if(!token) throw unauthorizedError();
+  console.log(token);
+
+  try {
+    await userService.userSignOut(token);
+    return res.sendStatus(httpStatus.NO_CONTENT);
+  } catch (error) {
+    if(error.name === "NotFoundError") return res.status(httpStatus.NOT_FOUND).send(error);
+    if(error.name === "UnauthorizedError") return res.status(httpStatus.UNAUTHORIZED).send(error);
+    return res.status(httpStatus.BAD_REQUEST).send(error);
   }
 }

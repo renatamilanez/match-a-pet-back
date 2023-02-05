@@ -3,7 +3,7 @@ import { Prisma } from "@prisma/client";
 import { type } from "os";
 
 async function findByEmail(email: string) {
-  return prisma.user.findFirst({
+  return await prisma.user.findFirst({
     where: {
       email
     }
@@ -11,13 +11,13 @@ async function findByEmail(email: string) {
 }
 
 async function createUser(data: Prisma.UserUncheckedCreateInput) {
-  return prisma.user.create({
+  return await prisma.user.create({
     data
   });
 }
 
 async function addToMyPets(petId: number, userId: number, count: number) {
-  await prisma.$transaction([
+  return await prisma.$transaction([
     prisma.myPet.create({
       data: {
         petId,
@@ -35,10 +35,25 @@ async function addToMyPets(petId: number, userId: number, count: number) {
   ]);
 }
 
+async function deleteSession(token: string) {
+  const data = await prisma.session.findFirst({
+    where: {
+      token
+    },
+  });
+
+  return await prisma.session.delete({
+    where: {
+      id: data.id
+    }
+  });
+}
+
 const userRepository = {
   findByEmail,
   createUser,
-  addToMyPets
+  addToMyPets,
+  deleteSession
 };
 
 export default userRepository;

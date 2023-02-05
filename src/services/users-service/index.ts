@@ -29,11 +29,16 @@ async function addToMyPets(userId: number, petId: number, count: number) {
   await userRepository.addToMyPets(userId, petId, count);
 }
 
+async function userSignOut(token: string) {
+  await userRepository.deleteSession(token);
+}
+
 export type CreateUserParams = Pick<User, "email" | "password" | "name" | "state">;
 
 const userService = {
   createUser,
-  addToMyPets
+  addToMyPets,
+  userSignOut
 };
 
 export default userService;

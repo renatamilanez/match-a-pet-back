@@ -13,7 +13,7 @@ export async function signInPost(req: Request, res: Response) {
       email: user.user.email,
       token: user.token
     }
-
+    
     return res.status(httpStatus.OK).send(result);
   } catch (error) {
     return res.status(httpStatus.UNAUTHORIZED).send({});

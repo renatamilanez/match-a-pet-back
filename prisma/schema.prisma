@@ -71,7 +71,7 @@ model PetType {
 
 model Session {
   id        Int       @id @default(autoincrement())
-  token     String    @db.VarChar(255)
+  token     String    @unique @db.VarChar(255)
   userId    Int?
   hostId    Int?
   createdAt DateTime? @default(now()) @db.Timestamp(6)
