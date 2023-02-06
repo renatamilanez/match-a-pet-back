@@ -1,3 +1,5 @@
+import { conflictError, notFoundError, unauthorizedError } from "@/errors";
+import petsRepository from "@/repositories/pets-repository";
 import userRepository from "@/repositories/users-repository";
 import { User } from "@prisma/client";
 import bcrypt from "bcrypt";
@@ -15,7 +17,7 @@ export async function createUser({email, password, name, state}: CreateUserParam
     state
   }
 
-  return userRepository.createUser(data);
+  return await userRepository.createUser(data);
 }
 
 async function validateUniqueEmailOrFail(email: string) {
@@ -26,11 +28,29 @@ async function validateUniqueEmailOrFail(email: string) {
 }
 
 async function addToMyPets(userId: number, petId: number, count: number) {
-  await userRepository.addToMyPets(userId, petId, count);
+  const isPetAvailable = await petsRepository.findPet(petId);
+  if(!isPetAvailable) throw notFoundError();
+  if(isPetAvailable.isAvailable === false) throw unauthorizedError();
+  
+  const isPetFavorited = await userRepository.findPetInMyPet(userId, petId);
+  if(isPetFavorited === null) throw conflictError('Pet already added to MyPet list');
+
+  return await userRepository.addToMyPets(userId, petId, count);
+}
+
+async function getMyPets(userId: number) {
+  if(!userId) throw unauthorizedError();
+  
+  const pets = await userRepository.findMyPets(userId);
+  if(!pets) throw notFoundError();
+
+  console.log(pets);
+
+  return pets;
 }
 
 async function userSignOut(token: string) {
-  await userRepository.deleteSession(token);
+  return await userRepository.deleteSession(token);
 }
 
 export type CreateUserParams = Pick<User, "email" | "password" | "name" | "state">;
@@ -38,6 +58,7 @@ export type CreateUserParams = Pick<User, "email" | "password" | "name" | "state
 const userService = {
   createUser,
   addToMyPets,
+  getMyPets,
   userSignOut
 };
 

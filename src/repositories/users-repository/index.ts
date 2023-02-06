@@ -1,6 +1,5 @@
 import { prisma } from "@/config";
 import { Prisma } from "@prisma/client";
-import { type } from "os";
 
 async function findByEmail(email: string) {
   return await prisma.user.findFirst({
@@ -35,6 +34,31 @@ async function addToMyPets(petId: number, userId: number, count: number) {
   ]);
 }
 
+async function findMyPets(userId: number) {
+  return await prisma.myPet.findMany({
+    where: {
+      userId
+    },
+    include: {
+      AvailablePets: {
+        select: {
+          id: true,
+          name: true,
+          picture: true,
+          isAvailable: true
+        },
+        include: {
+          Host: {
+            select: {
+              email: true
+            }
+          }
+        },
+      }
+    }
+  });
+}
+
 async function deleteSession(token: string) {
   const data = await prisma.session.findFirst({
     where: {
@@ -49,11 +73,22 @@ async function deleteSession(token: string) {
   });
 }
 
+async function findPetInMyPet(userId: number, petId: number) {
+  return await prisma.myPet.findMany({
+    where: {
+      userId,
+      petId,
+    },
+  });
+}
+
 const userRepository = {
   findByEmail,
   createUser,
   addToMyPets,
-  deleteSession
+  findMyPets,
+  deleteSession,
+  findPetInMyPet
 };
 
 export default userRepository;

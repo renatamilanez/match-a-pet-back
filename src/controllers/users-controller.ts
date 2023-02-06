@@ -29,18 +29,35 @@ export async function addToMyPets(req: AuthenticatedRequest, res: Response) {
   const count = Number(req.body.count);
   const {userId} = req;
 
+  if(!petId || !count || !userId) return res.sendStatus(httpStatus.BAD_REQUEST);
+
   try {
     await userService.addToMyPets(petId, userId, count);
     return res.sendStatus(httpStatus.CREATED);
   } catch (error) {
-    
+    if(error.name === "NotFoundError") return res.status(httpStatus.NOT_FOUND).send(error);
+    if(error.name === "UnauthorizedError") return res.status(httpStatus.UNAUTHORIZED).send(error);
+    if(error.name === "ConflictError") return res.status(httpStatus.CONFLICT).send(error);
+    return res.status(httpStatus.BAD_REQUEST).send(error);
+  }
+}
+
+export async function getMyPets(req: AuthenticatedRequest, res: Response) {
+  const {userId} = req;
+
+  try {
+    const pets = await userService.getMyPets(userId);
+    return res.status(httpStatus.OK).send(pets);
+  } catch (error) {
+    if(error.name === "NotFoundError") return res.status(httpStatus.NOT_FOUND).send(error);
+    if(error.name === "UnauthorizedError") return res.status(httpStatus.UNAUTHORIZED).send(error);
+    return res.status(httpStatus.BAD_REQUEST).send(error);
   }
 }
 
 export async function userSignOut(req: AuthenticatedRequest, res: Response) {
   const token = req.headers.authorization?.replace('Bearer', '');
   if(!token) throw unauthorizedError();
-  console.log(token);
 
   try {
     await userService.userSignOut(token);

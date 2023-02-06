@@ -2,7 +2,7 @@ import { prisma } from "@/config";
 import { Prisma } from "@prisma/client";
 
 async function findByEmail(email: string) {
-  return prisma.user.findFirst({
+  return await prisma.host.findFirst({
     where: {
       email
     }
@@ -10,14 +10,23 @@ async function findByEmail(email: string) {
 }
 
 async function createHost(data: Prisma.HostUncheckedCreateInput) {
-  return prisma.host.create({
+  return await prisma.host.create({
     data
   });
 }
 
-const userRepository = {
+async function findHostById(id: number) {
+  return await prisma.host.findFirst({
+    where: {
+      id
+    }
+  });
+}
+
+const hostRepository = {
   findByEmail,
-  createHost
+  createHost,
+  findHostById
 };
 
-export default userRepository;
+export default hostRepository;

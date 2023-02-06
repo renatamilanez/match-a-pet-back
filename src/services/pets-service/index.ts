@@ -1,7 +1,8 @@
-import { AvailablePets, PetType } from "@prisma/client";
-import { notFoundError } from "@/errors";
+import { AvailablePets, Host, PetType } from "@prisma/client";
+import { conflictError, notFoundError, unauthorizedError } from "@/errors";
 import { exclude } from "@/utils/prisma-utils";
 import petsRepository from "@/repositories/pets-repository";
+import hostRepository from "@/repositories/hosts-repository";
 
 export async function getPets() {
   const pets: AvailablePets[] = await petsRepository.findMany();
@@ -42,11 +43,51 @@ export async function getTypes() {
   return types;
 }
 
+export async function createPet(data: PetData) {
+  const type: PetType = await petsRepository.findPetId(data.petType);
+  if(!type) throw notFoundError();
+
+  const host: Host = await hostRepository.findHostById(data.hostId);
+  if(!host) throw unauthorizedError();
+
+  const petData = {
+    hostId: data.hostId,
+    petTypeId: type.id,
+    name: data.name,
+    age: data.age,
+    race: data.race,
+    picture: data.picture,
+    isVaccinated: data.isVaccinated
+  };
+
+  return await petsRepository.createPet(petData);
+}
+
+type PetData = {
+  name: string, 
+  age: number, 
+  race: string, 
+  picture: string, 
+  isVaccinated: boolean, 
+  petType: string, 
+  hostId: number
+}
+
+export async function updatePetAvailability(id: number, hostId: number) {
+  const petId = await petsRepository.findPetById(id);
+
+  if(petId.Host.id !== hostId) throw unauthorizedError();
+
+  return await petsRepository.updateAvailability(id);
+}
+
 const petsService = {
   getPets,
   getPetsByType,
   getPetById,
-  getTypes
+  getTypes,
+  createPet,
+  updatePetAvailability
 };
 
 export default petsService;

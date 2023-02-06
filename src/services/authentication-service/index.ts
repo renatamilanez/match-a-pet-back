@@ -9,7 +9,6 @@ import { invalidCredentialsError } from "./errors";
 
 async function signIn(email: string, password: string, userType: string): Promise<SignInResult> {  
   const user = await getUserOrFail(email);
-  console.log(userType);
 
   await validatePasswordOrFail(password, user.password);
 

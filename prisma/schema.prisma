@@ -24,15 +24,15 @@ model Address {
 
 model AvailablePets {
   id           Int       @id @default(autoincrement())
+  name         String    @db.VarChar(255)
+  age          Int
+  race         String    @db.VarChar(255)
+  picture      String    @db.VarChar(255)
   hostId       Int
   petTypeId    Int
-  name         String    @db.VarChar(255)
-  age          String    @db.VarChar(255)
-  race         String    @db.VarChar(255)
   isVaccinated Boolean
-  isAvailable  Boolean   @default(true)
-  countLikes   Int       @default(0)
-  picture      String    @db.VarChar(255)
+  isAvailable  Boolean?  @default(true)
+  countLikes   Int?      @default(0)
   createdAt    DateTime? @default(now()) @db.Timestamp(6)
   updatedAt    DateTime? @default(now()) @db.Timestamp(6)
   Host         Host      @relation(fields: [hostId], references: [id], onDelete: NoAction, onUpdate: NoAction)

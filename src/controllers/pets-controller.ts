@@ -2,6 +2,8 @@ import { AuthenticatedRequest } from "@/middlewares";
 import { Response } from "express";
 import httpStatus from "http-status";
 import petsService from "@/services/pets-service";
+import petsRepository from "@/repositories/pets-repository";
+import { unauthorizedError } from "@/errors";
 
 export async function getPets(req: AuthenticatedRequest, res: Response) {
   try {
@@ -46,6 +48,46 @@ export async function getPetById(req: AuthenticatedRequest, res: Response) {
     return res.status(httpStatus.OK).send(pet);
   } catch (error) {
     if (error.name === "NotFoundError") return res.sendStatus(httpStatus.NOT_FOUND);
+    return res.sendStatus(httpStatus.BAD_REQUEST);
+  }
+}
+
+export async function updatePetAvailability(req: AuthenticatedRequest, res: Response) {
+  const petId = Number(req.params.petId);
+  const { hostId } = res.locals;
+  if(!hostId) throw unauthorizedError();
+
+  try {
+    await petsService.updatePetAvailability(petId, hostId);
+
+    return res.sendStatus(httpStatus.OK);
+  } catch (error) {
+    if (error.name === "NotFoundError") return res.sendStatus(httpStatus.NOT_FOUND);
+    if (error.name === "UnauthorizedError") return res.sendStatus(httpStatus.UNAUTHORIZED);
+    return res.sendStatus(httpStatus.BAD_REQUEST);
+  }
+}
+
+export async function createPet(req: AuthenticatedRequest, res: Response) {
+  const { name, age, race, picture, isVaccinated, petType, hostId } = req.body;
+
+  const data = {
+    name, 
+    age, 
+    race, 
+    picture, 
+    isVaccinated, 
+    petType, 
+    hostId
+  }
+
+  try {
+    const pet = await petsService.createPet(data);
+
+    return res.status(httpStatus.CREATED).send(pet);
+  } catch (error) {
+    if (error.name === "NotFoundError") return res.sendStatus(httpStatus.NOT_FOUND);
+    if (error.name === "UnauthorizedError") return res.sendStatus(httpStatus.UNAUTHORIZED);
     return res.sendStatus(httpStatus.BAD_REQUEST);
   }
 }
