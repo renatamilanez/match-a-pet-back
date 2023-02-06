@@ -60,15 +60,9 @@ async function findMyPets(userId: number) {
 }
 
 async function deleteSession(token: string) {
-  const data = await prisma.session.findFirst({
-    where: {
-      token
-    },
-  });
-
   return await prisma.session.delete({
     where: {
-      id: data.id
+      token
     }
   });
 }
@@ -82,13 +76,39 @@ async function findPetInMyPet(userId: number, petId: number) {
   });
 }
 
+async function findUserTypeByToken(token: string) {
+  return await prisma.session.findFirst({
+    where: {
+      token
+    },
+    select: {
+      userId: true,
+      hostId: true
+    }
+  });
+}
+
+async function findState(id: number) {
+  return await prisma.user.findFirst({
+    where: {
+      id
+    },
+    select: {
+      id: true,
+      state: true
+    }
+  });
+}
+
 const userRepository = {
   findByEmail,
   createUser,
   addToMyPets,
   findMyPets,
   deleteSession,
-  findPetInMyPet
+  findPetInMyPet,
+  findUserTypeByToken,
+  findState,
 };
 
 export default userRepository;

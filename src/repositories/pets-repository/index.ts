@@ -1,10 +1,21 @@
 import { prisma } from "@/config";
 import { AvailablePets } from "@prisma/client";
 
-async function findMany() {
+async function findMany(state: string) {
   return await prisma.availablePets.findMany({
     where: {
+      Host: {
+        state
+      },
       isAvailable: true
+    }
+  });
+}
+
+async function findHostPets(id: number) {
+  return await prisma.availablePets.findMany({
+    where: {
+      hostId: id
     }
   });
 }
@@ -102,7 +113,8 @@ const petsRepository = {
   createPet,
   findPetId,
   updateAvailability,
-  findPetById
+  findPetById,
+  findHostPets
 };
 
 export default petsRepository;

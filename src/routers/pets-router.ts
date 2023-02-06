@@ -13,6 +13,7 @@ import {
 const petsRouter = Router();
 
 petsRouter
+    .all("/*", authenticateToken)
     .get("", getPets)
     .get("/type/:type", getPetsByType)
     .get("/types", getTypes)

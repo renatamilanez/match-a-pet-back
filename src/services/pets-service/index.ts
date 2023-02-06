@@ -1,14 +1,33 @@
 import { AvailablePets, Host, PetType } from "@prisma/client";
-import { conflictError, notFoundError, unauthorizedError } from "@/errors";
-import { exclude } from "@/utils/prisma-utils";
+import { notFoundError, unauthorizedError } from "@/errors";
 import petsRepository from "@/repositories/pets-repository";
 import hostRepository from "@/repositories/hosts-repository";
+import userRepository from "@/repositories/users-repository";
 
-export async function getPets() {
-  const pets: AvailablePets[] = await petsRepository.findMany();
+async function getPetsForUser(id: number) {
+  const state = await userRepository.findState(id);
+  if(!state) throw unauthorizedError();
+
+  const pets: AvailablePets[] = await petsRepository.findMany(state.state);
   if(!pets) throw notFoundError();
 
   return pets;
+}
+
+async function getHostPets(id: number) {
+  const pets = await petsRepository.findHostPets(id);
+  if(!pets) throw notFoundError();
+
+  return pets;
+}
+
+export async function getPets(token: string) {
+  const userType = await userRepository.findUserTypeByToken(token);
+  if(userType.userId !== null) {
+    return await getPetsForUser(userType.userId);
+  }
+  
+  return await getHostPets(userType.hostId);
 }
 
 export async function getPetsByType(type: string) {

@@ -56,14 +56,13 @@ export async function getMyPets(req: AuthenticatedRequest, res: Response) {
 }
 
 export async function userSignOut(req: AuthenticatedRequest, res: Response) {
-  const token = req.headers.authorization?.replace('Bearer', '');
+  const token: string = req.headers.authorization?.replace('Bearer ', '');
   if(!token) throw unauthorizedError();
 
   try {
     await userService.userSignOut(token);
     return res.sendStatus(httpStatus.NO_CONTENT);
   } catch (error) {
-    if(error.name === "NotFoundError") return res.status(httpStatus.NOT_FOUND).send(error);
     if(error.name === "UnauthorizedError") return res.status(httpStatus.UNAUTHORIZED).send(error);
     return res.status(httpStatus.BAD_REQUEST).send(error);
   }

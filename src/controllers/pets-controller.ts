@@ -2,12 +2,14 @@ import { AuthenticatedRequest } from "@/middlewares";
 import { Response } from "express";
 import httpStatus from "http-status";
 import petsService from "@/services/pets-service";
-import petsRepository from "@/repositories/pets-repository";
 import { unauthorizedError } from "@/errors";
 
 export async function getPets(req: AuthenticatedRequest, res: Response) {
+  const token: string = req.headers.authorization?.replace('Bearer ', '');
+  if(!token) throw unauthorizedError();
+
   try {
-    const pets = await petsService.getPets();
+    const pets = await petsService.getPets(token);
     return res.status(httpStatus.OK).send(pets);
   } catch (error) {
     if (error.name === "NotFoundError") return res.sendStatus(httpStatus.NOT_FOUND);

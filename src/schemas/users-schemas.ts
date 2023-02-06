@@ -12,7 +12,3 @@ export const addPetSchema = Joi.object({
   petId: Joi.number().required(),
   count: Joi.number().required()
 });
-
-export const deleteUserSchema = Joi.object({
-  token: Joi.string().required()
-});
