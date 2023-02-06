@@ -62,15 +62,15 @@ export async function getTypes() {
   return types;
 }
 
-export async function createPet(data: PetData) {
-  const type: PetType = await petsRepository.findPetId(data.petType);
+export async function createPet(data: PetData, token: string) {
+  const type: PetType = await petsRepository.findPetTypeId(data.petType);
   if(!type) throw notFoundError();
 
-  const host: Host = await hostRepository.findHostById(data.hostId);
+  const host = await userRepository.findUserTypeByToken(token);
   if(!host) throw unauthorizedError();
 
   const petData = {
-    hostId: data.hostId,
+    hostId: host.hostId,
     petTypeId: type.id,
     name: data.name,
     age: data.age,
@@ -88,8 +88,7 @@ type PetData = {
   race: string, 
   picture: string, 
   isVaccinated: boolean, 
-  petType: string, 
-  hostId: number
+  petType: string
 }
 
 export async function updatePetAvailability(id: number, hostId: number) {

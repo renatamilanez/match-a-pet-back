@@ -19,6 +19,6 @@ petsRouter
     .get("/types", getTypes)
     .get("/id/:petId", getPetById)
     .post("/", validateBody(createPetSchema), createPet)
-    .put("/:petId", updatePetAvailability);
+    .delete("/:petId", updatePetAvailability);
 
 export { petsRouter };

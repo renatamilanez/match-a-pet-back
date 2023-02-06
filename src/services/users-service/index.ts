@@ -44,8 +44,6 @@ async function getMyPets(userId: number) {
   const pets = await userRepository.findMyPets(userId);
   if(!pets) throw notFoundError();
 
-  console.log(pets);
-
   return pets;
 }
 
@@ -53,13 +51,26 @@ async function userSignOut(token: string) {
   return await userRepository.deleteSession(token);
 }
 
+async function getUserData(id: number) {
+  return await userRepository.findUser(id);
+}
+
+async function updateUser(id: number, data: UpdateUserParams) {
+  if(!id) throw unauthorizedError();
+
+  return await userRepository.updateUser(id, data);
+}
+
 export type CreateUserParams = Pick<User, "email" | "password" | "name" | "state">;
+export type UpdateUserParams = Pick<User, "email" | "name" | "state" | "phone">;
 
 const userService = {
   createUser,
   addToMyPets,
   getMyPets,
-  userSignOut
+  userSignOut,
+  getUserData,
+  updateUser
 };
 
 export default userService;

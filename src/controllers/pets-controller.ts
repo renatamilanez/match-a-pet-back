@@ -71,20 +71,22 @@ export async function updatePetAvailability(req: AuthenticatedRequest, res: Resp
 }
 
 export async function createPet(req: AuthenticatedRequest, res: Response) {
-  const { name, age, race, picture, isVaccinated, petType, hostId } = req.body;
+  const { name, age, race, picture, isVaccinated, petType } = req.body;
+  
+  const token: string = req.headers.authorization?.replace('Bearer ', '');
+  if(!token) throw unauthorizedError();
 
   const data = {
     name, 
-    age, 
+    age: Number(age), 
     race, 
     picture, 
     isVaccinated, 
-    petType, 
-    hostId
+    petType,
   }
 
   try {
-    const pet = await petsService.createPet(data);
+    const pet = await petsService.createPet(data, token);
 
     return res.status(httpStatus.CREATED).send(pet);
   } catch (error) {

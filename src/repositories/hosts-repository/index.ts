@@ -1,4 +1,5 @@
 import { prisma } from "@/config";
+import { UpdateHostParams } from "@/services";
 import { Prisma } from "@prisma/client";
 
 async function findByEmail(email: string) {
@@ -23,10 +24,40 @@ async function findHostById(id: number) {
   });
 }
 
+async function findHostData(id: number) {
+  return await prisma.host.findFirst({
+    where: {
+      id
+    },
+    select: {
+      name: true,
+      email: true,
+      state: true,
+      phone: true
+    }
+  });
+}
+
+async function updateHost(id: number, data: UpdateHostParams) {
+  return await prisma.host.update({
+    where: {
+      id
+    },
+    data: {
+      name: data.name,
+      state: data.state,
+      email: data.email,
+      phone: data.phone,
+    }
+  });
+}
+
 const hostRepository = {
   findByEmail,
   createHost,
-  findHostById
+  findHostById,
+  findHostData,
+  updateHost
 };
 
 export default hostRepository;

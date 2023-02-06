@@ -30,7 +30,6 @@ async function getUserOrFail(email: string): Promise<GetUserOrFailResult> {
 
 async function createSession(userId: number, userType: string) {
   const token = jwt.sign({ userId }, process.env.JWT_SECRET);
-  console.log(userType);
   if(userType === 'user'){
     await sessionRepository.create({
       token,

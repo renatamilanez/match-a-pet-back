@@ -15,7 +15,11 @@ async function findMany(state: string) {
 async function findHostPets(id: number) {
   return await prisma.availablePets.findMany({
     where: {
-      hostId: id
+      hostId: id,
+      isAvailable: true
+    },
+    orderBy: {
+      updatedAt: 'desc'
     }
   });
 }
@@ -68,8 +72,7 @@ async function createPet(data: Pet) {
   });
 }
 
-async function findPetId(type: string) {
-  const name = type.toLowerCase();
+async function findPetTypeId(name: string) {
   return await prisma.petType.findFirst({
     where: {
       name
@@ -111,7 +114,7 @@ const petsRepository = {
   findPet,
   findTypes,
   createPet,
-  findPetId,
+  findPetTypeId,
   updateAvailability,
   findPetById,
   findHostPets

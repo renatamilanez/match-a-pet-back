@@ -1,4 +1,5 @@
 import { prisma } from "@/config";
+import { UpdateUserParams } from "@/services";
 import { Prisma } from "@prisma/client";
 
 async function findByEmail(email: string) {
@@ -100,6 +101,33 @@ async function findState(id: number) {
   });
 }
 
+async function findUser(id: number) {
+  return await prisma.user.findFirst({
+    where: {
+      id
+    },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      state: true
+    }
+  });
+}
+
+async function updateUser(id: number, data: UpdateUserParams) {
+  return await prisma.user.update({
+    where: {
+      id
+    },
+    data: {
+      name: data.name,
+      state: data.state,
+      email: data.email
+    }
+  });
+}
+
 const userRepository = {
   findByEmail,
   createUser,
@@ -109,6 +137,8 @@ const userRepository = {
   findPetInMyPet,
   findUserTypeByToken,
   findState,
+  findUser,
+  updateUser
 };
 
 export default userRepository;

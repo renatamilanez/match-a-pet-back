@@ -48,6 +48,7 @@ model Host {
   state         String          @db.VarChar(255)
   createdAt     DateTime?       @default(now()) @db.Timestamp(6)
   updatedAt     DateTime?       @default(now()) @db.Timestamp(6)
+  phone         String?         @db.VarChar(255)
   Address       Address[]
   AvailablePets AvailablePets[]
   Session       Session[]
@@ -88,6 +89,7 @@ model User {
   state     String    @db.VarChar(255)
   createdAt DateTime? @default(now()) @db.Timestamp(6)
   updatedAt DateTime? @default(now()) @db.Timestamp(6)
+  phone     String?   @db.VarChar(255)
   MyPet     MyPet[]
   Session   Session[]
 }

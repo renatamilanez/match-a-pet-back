@@ -67,3 +67,36 @@ export async function userSignOut(req: AuthenticatedRequest, res: Response) {
     return res.status(httpStatus.BAD_REQUEST).send(error);
   }
 }
+
+export async function getProfileData(req: AuthenticatedRequest, res: Response) {
+  const {userId} = req;
+
+  try {
+    const data = await userService.getUserData(userId);
+    return res.status(httpStatus.OK).send(data);
+  } catch (error) {
+    if(error.name === "UnauthorizedError") return res.status(httpStatus.UNAUTHORIZED).send(error);
+    return res.status(httpStatus.BAD_REQUEST).send(error);
+  }
+}
+
+export async function updateUserProfile(req: AuthenticatedRequest, res: Response) {
+  const {userId} = req;
+  const {name, email, state, phone} = req.body;
+
+  const data = {
+    name,
+    email,
+    phone,
+    state
+  };
+
+  try {
+    await userService.updateUser(userId, data);
+
+    return res.sendStatus(httpStatus.OK);
+  } catch (error) {
+    if(error.name === "UnauthorizedError") return res.status(httpStatus.UNAUTHORIZED).send(error);
+    return res.status(httpStatus.BAD_REQUEST).send(error);
+  }
+}
